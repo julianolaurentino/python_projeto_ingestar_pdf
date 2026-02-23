@@ -1,7 +1,7 @@
 # 🐍 Projeto ETL Python em arquivos .pdf
 
-
-![estimativa de passageiros](/home/obzen/Imagens/Capturas%20de%20tela/Captura%20de%20tela%20de%202026-02-21%2016-17-29.png)
+### Tabela dentro do PDF para ingestar
+![image](data\partidas.png)
 
 ### Bibliotecas Python
 Essas são as bibliotecas utilizas nessa projeto:
@@ -224,11 +224,11 @@ print(f"DataFrame final: {df_final.shape}")
 df_final.head(200)
 ```
 ### Resultado
-![legenda da imagem](/home/obzen/Imagens/Capturas%20de%20tela/Captura%20de%20tela%20de%202026-02-21%2018-38-34.png)
+![Tabela final](data\resultado.png)
 
 
 ### Exportar
 Agora exporte para algum diretório (nesse caso exportei para csv "Escolha o melhor diretório para o seu caso"):
 ```python
-df_final.to_csv("partidas_processado.csv", index=False)
+df_final.to_csv("data\partidas_processado.csv", index=False)
 ```
