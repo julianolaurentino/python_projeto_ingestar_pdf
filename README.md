@@ -1,7 +1,7 @@
 # 🐍 Projeto ETL Python em arquivos .pdf
 
 ### Tabela dentro do PDF para ingestar
-![image](data\partidas.png)
+![partidas](data\partidas.png)
 
 ### Bibliotecas Python
 Essas são as bibliotecas utilizas nessa projeto:
@@ -232,3 +232,6 @@ Agora exporte para algum diretório (nesse caso exportei para csv "Escolha o mel
 ```python
 df_final.to_csv("data\partidas_processado.csv", index=False)
 ```
+
+### Autor
+@julianolaurentino
