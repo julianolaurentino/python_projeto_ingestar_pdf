@@ -1,20 +1,10 @@
-# Como realizar tratamento de arquivos .pdf com python 🐍
+# 🐍 Projeto ETL Python em arquivos .pdf
 
-eaeh caba bom 🤙
-
-Hoje vamos aprender como tratar arquivos pdf com python e se livrar daquele trabalho chatão de tratamento de base toda vez que te mandarem atualizar o dashboard a partir desse arquivo.
-
-### Cenário
-Imagina sempre receber um arquivo ~~pdf~~ 🥶 com uma informação importante e ter que transformar esse dado em uma tabela para alimentar uma ferramenta de data viz. Podendo ser uma base extraída para csv/excel etc. 
-
-> Usaremos um exemplo de entradas de passageiros dentro de um aeroporto
-
-> Apenas o quadro "Estimativa de Passageiros - Partida" nos interessa nesse momento no exemplo a seguir
 
 ![estimativa de passageiros](/home/obzen/Imagens/Capturas%20de%20tela/Captura%20de%20tela%20de%202026-02-21%2016-17-29.png)
 
 ### Bibliotecas Python
-Essas são as bibliotecas utilizas nessa projeto (dependendo, pode até rolar um .venv depois):
+Essas são as bibliotecas utilizas nessa projeto:
 
 ```
 import pandas as pd
@@ -37,7 +27,7 @@ Aqui será realizado o tratamento de acordo com a demanda do arquivo, podendo va
 ### Etapas
 **Etapa 1** — 
 Abre o PDF com pdfplumber e varre todas as palavras da página para localizar as coordenadas verticais (eixo Y) das ocorrências do termo "Partidas". A primeira ocorrência marca o início da tabela desejada e a segunda (que corresponde ao título "Chegadas + Partidas") marca o fim. Com esses dois pontos é feito um recorte preciso da região (crop) e a tabela é extraída como lista de listas via extract_table(). Louco não?
-```
+```python
 with pdfplumber.open(caminho_pdf) as pdf:
     pagina = pdf.pages[0]
 
@@ -71,7 +61,7 @@ with pdfplumber.open(caminho_pdf) as pdf:
 **Etapa 2** — 
 A lista de listas retornada pelo pdfplumber é convertida em um pd.DataFrame, tornando possível o uso de todas as ferramentas do pandas nas etapas seguintes.
 
-```
+```python
 df_raw = pd.DataFrame(df_raw)
 print(f"Shape: {df_raw.shape}")
 df_raw.head(10)
@@ -80,7 +70,7 @@ df_raw.head(10)
 **Etapa 3** — 
 Valores None e strings vazias " " — muito comuns em extrações de PDF — são uniformizados para NaN, garantindo que as verificações de nulidade com pd.isna() funcionem de forma consistente em todo o DataFrame.
 
-```
+```python
 df_raw = df_raw.replace({None: np.nan, '': np.nan})
 ```
 
@@ -91,7 +81,7 @@ df_raw = df_raw.replace({None: np.nan, '': np.nan})
 * Mês: encontra a linha com 'Mês' e monta um dicionário {índice_coluna → nome_do_mês}, permitindo saber qual mês corresponde a cada bloco de colunas.
 * Dias: encontra a linha com 'Hora' (que contém os dias do mês como cabeçalho) e monta um dicionário {índice_coluna → número_do_dia}.
 
-```
+```python
 def encontrar_linha(df, valor):
     """Retorna índice da linha onde o valor aparece em qualquer coluna."""
     for i, row in df.iterrows():
@@ -136,7 +126,7 @@ print(f"Dias encontrados ({len(mapa_dia)}): {list(mapa_dia.values())}")
 
 **Etapa 5** — Identifica automaticamente qual coluna contém os horários no formato HH:MM (usando regex) e filtra o DataFrame mantendo apenas as linhas que representam dados reais, descartando cabeçalhos, linhas em branco e metadados residuais.
 
-```
+```python
 def is_horario(val):
     return bool(re.match(r'^\d{1,2}:\d{2}$', str(val).strip()))
 
@@ -154,7 +144,7 @@ print(f"Linhas de dados encontradas: {len(df_dados)}")
 
 **Etapa 6** — Converte a tabela do formato wide (colunas = dias, linhas = horas) para o formato long (um registro por combinação hora + dia). Para cada célula com valor válido, o código consulta os dicionários da Etapa 4 para descobrir o dia e o mês corretos. Volumes são limpos de formatação (pontos de milhar, vírgulas decimais) e convertidos para inteiro. O resultado é um DataFrame com as colunas: hora, dia, mes, ano, volume.
 
-```
+```python
 def _mes_para_coluna(col_idx, mapa_mes):
     mes_atual = None
     for idx in sorted(mapa_mes.keys()):
@@ -192,7 +182,7 @@ turno: classifica cada hora em um dos quatro turnos do dia — Madrugada (00h–
 data: monta uma data completa (datetime) a partir de ano, mês e dia, útil para ordenações e análises de série temporal.
 mesclado: coluna estática com o identificador do lounge de origem ('FOR DOM'), permitindo rastrear a procedência dos dados em cargas futuras com múltiplas origens.
 
-```
+```python
 MESES = {
     'janeiro':1,'fevereiro':2,'março':3,'abril':4,
     'maio':5,'junho':6,'julho':7,'agosto':8,
@@ -220,7 +210,7 @@ df_long['data'] = pd.to_datetime(
 **Etapa 8** - 
 Consolida os registros agrupando por todas as dimensões analíticas (ano_ref, mes_ref, mes, dia, data, turno, mesclado, hora) e somando os volumes. O resultado é ordenado cronologicamente por ano, mês, dia e hora, gerando o DataFrame final limpo, estruturado e pronto para carga ou análise.
 
-```
+```python
 df_final = (
     df_long
     .groupby(['ano_ref','mes_ref','mes','dia','data','turno','mesclado','hora'], dropna=False)
@@ -234,16 +224,11 @@ print(f"DataFrame final: {df_final.shape}")
 df_final.head(200)
 ```
 ### Resultado
-Olha só que belezinha que fica:
 ![legenda da imagem](/home/obzen/Imagens/Capturas%20de%20tela/Captura%20de%20tela%20de%202026-02-21%2018-38-34.png)
 
-o seu analista de BI receber essa tabelinha sempre limpa e no horário é o ápice 🫨.
 
 ### Exportar
-Agora exporte para algum diretório e seja feliz (nesse caso exportei para csv "Escolha o melhor diretório para o seu caso"):
-```
+Agora exporte para algum diretório (nesse caso exportei para csv "Escolha o melhor diretório para o seu caso"):
+```python
 df_final.to_csv("partidas_processado.csv", index=False)
 ```
-
-# Resumo
-Então é isso glr. Com uma simples engenharia de dados, da para transformar um trampo bem trabalhoso em algo automático. Caso a sua base pdf seja um pouco diferente, a lógica de transformação pode ser a mesma, alterando pequenos parâmetros. 
