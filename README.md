@@ -234,4 +234,4 @@ df_final.to_csv("data\partidas_processado.csv", index=False)
 ```
 
 ### Autor
-@julianolaurentino
+- [@JulianoLaurentino](https://www.linkedin.com/in/julianolaurentinodasilva/)
