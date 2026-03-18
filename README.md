@@ -1,7 +1,7 @@
 # 🐍 Projeto ETL Python em arquivos .pdf
 
 ### Tabela dentro do PDF para ingestar
-![partidas](data\partidas.png)
+![partidas](https://i.postimg.cc/cHDhJcN9/Captura-de-tela-de-2026-02-23-20-15-28.png)
 
 ### Bibliotecas Python
 Essas são as bibliotecas utilizas nessa projeto:
