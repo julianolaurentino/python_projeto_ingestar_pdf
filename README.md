@@ -224,7 +224,7 @@ print(f"DataFrame final: {df_final.shape}")
 df_final.head(200)
 ```
 ### Resultado
-![Tabela final](data\resultado.png)
+![Tabela final](https://i.postimg.cc/3xHjtSXP/Captura-de-tela-de-2026-02-21-18-38-34.png)
 
 
 ### Exportar
